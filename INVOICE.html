@@ -1,0 +1,177 @@
+<html>
+<head>
+    <title>Generate Invoice</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .field {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .output {
+            display: none;
+            margin-top: 30px;
+        }
+        .output h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .details {
+            font-size: 16px;
+            color: #333;
+        }
+        .table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .table th {
+            background: #f4f4f4;
+        }
+        .table td {
+            text-align: center;
+        }
+        .btn-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .btn-container button {
+            width: auto;
+            display: inline-block;
+            background: #007bff;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .output, .output * {
+                visibility: visible;
+            }
+            .output {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+            .btn-container {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="field">
+        <h1>Generate Invoice</h1>
+        <form id="invoiceForm">
+            <label for="custName">Customer Name:</label>
+            <input type="text" id="custName" required>
+            <label for="custAddress">Address:</label>
+            <input type="text" id="custAddress" required>
+            <label for="itemDesc">Item Description:</label>
+            <input type="text" id="itemDesc" required>
+            <label for="qty">Quantity:</label>
+            <input type="number" id="qty" required>
+            <label for="unitPrice">Price per Unit (₹):</label>
+            <input type="number" id="unitPrice" required>
+            <label for="taxRate">Tax Rate (%):</label>
+            <input type="number" id="taxRate" required>
+            <button type="submit">Generate Invoice</button>
+        </form>
+        
+        <div class="output" id="invoiceOutput">
+            <h2>Invoice Details</h2>
+            <div class="details" id="invoiceDetails"></div>
+            <div class="btn-container">
+                <button id="printBtn">Print Invoice</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById("invoiceForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const custName = document.getElementById("custName").value;
+            const custAddress = document.getElementById("custAddress").value;
+            const itemDesc = document.getElementById("itemDesc").value;
+            const qty = parseInt(document.getElementById("qty").value, 10);
+            const unitPrice = parseFloat(document.getElementById("unitPrice").value);
+            const taxRate = parseFloat(document.getElementById("taxRate").value);
+            const totalBeforeTax=qty*unitPrice;
+            const taxAmount=(totalBeforeTax*taxRate)/100;
+            const totalAmount=totalBeforeTax+taxAmount;
+            const invoiceHTML=`
+                <p><strong>Customer Name:</strong> ${custName}</p>
+                <p><strong>Address:</strong> ${custAddress}</p>
+                <table class="table">
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Unit Price (₹)</th>
+                        <th>Total (₹)</th>
+                    </tr>
+                    <tr>
+                        <td>${itemDesc}</td>
+                        <td>${qty}</td>
+                        <td>${unitPrice.toFixed(2)}</td>
+                        <td>${totalBeforeTax.toFixed(2)}</td>
+                    </tr>
+                </table>
+                <p><strong>Tax (${taxRate}%):</strong> ₹${taxAmount.toFixed(2)}</p>
+                <p><strong>Total Amount:</strong> ₹${totalAmount.toFixed(2)}</p>
+            `;
+            document.getElementById("invoiceDetails").innerHTML = invoiceHTML;
+            document.getElementById("invoiceOutput").style.display = "block";
+            document.getElementById("printBtn").style.display = "inline-block";
+        });
+        document.getElementById("printBtn").addEventListener("click", function() {
+            window.print();
+        });
+    </script>
+</body>
+</html>
